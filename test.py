@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #EpicBot in development by @bitcoinjake09 7/10/2019
-#EpicBot in Update by @bitcoinjake09 & @bountywolf 8/24/2019from steem import Steem
+#EpicBot in Update by @bitcoinjake09 & @bountywolf 8/24/2019
+from steem import Steem
 from beem.steem import Steem
 from beem.nodelist import NodeList
 from steem.transactionbuilder import TransactionBuilder
