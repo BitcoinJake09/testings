@@ -20,7 +20,7 @@ import threading
 nodes = ['https://steemd.minnowsupportproject.org/']
 
 
-PK = ''#put your private key here
+PK = ''
 accountname = 'bitcoinjake09' #replace my name with your STEEM name
 
 startBet = 0.1
@@ -40,40 +40,81 @@ blockchain = Blockchain()
 stream = blockchain.stream()
 
 nums = muchWon = 0
-whichAmt = fromWho = memoWhat = accFrom = memoDatas = amountDatas = ""
-winLose = fromEpic = None
 betAmount = startBet
 
 count = 1 #do not modify - is part of loop + display
 minimumBet = 0.1
 sleepAmt = 4
-isTooMuch = bet100 = oUn = 0.00
 houseEdge = (1 - 0.02)
 
 #get balance
 userAcct = Account(accountname)
-steemBalance = Amount(userAcct['balance']).amount
-print("%s STEEM" % steemBalance)
+def didWin():
+	nums = muchWon = 0
+	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = ""
+	winLose = fromEpic = None
+
+	for post in stream:
+	    if accountname in str(post):
+		dataStr = str(post).replace("u'","'")
+		dataStr = dataStr.replace("'","")
+		dataStr = dataStr.replace('"',"")
+		dataStr = dataStr.replace('{',"")
+		dataStr = dataStr.replace('}',"")
+		dataArray = dataStr.split(",")
+		for datas in dataArray:
+			if datas.find("from") != -1:
+				fromWho = datas
+				accFrom = fromWho.split(":")
+				if accFrom[1].strip()=="epicdice":
+					fromEpic = True
+				elif accFrom[1].strip()==accountname:
+					fromEpic = False
+			if datas.find("memo") != -1:
+				memoWhat = datas
+				memoDatas = memoWhat.split(":")
+				if memoDatas[1].strip()=="You have Won! Dice Rolled":
+					winLose = True
+				elif memoDatas[1].strip()=="You Lost. Dice Rolled":
+					winLose = False
+
+			if datas.find("betAmount") != -1:
+				betAmount = datas
+				amountDatas = betAmount.split(":")
+				tempWon = amountDatas[1].strip()
+				muchWon =tempWon.split(" ")
+				
+		if fromEpic is True:
+			if winLose is True:
+				print(accountname + " Won! " + str(muchWon[0]) + " STEEM")
+				return True
+			elif winLose is False:
+				print(accountname + " Lost! :,( " + str(muchWon[0]) + " STEEM")
+				return False
+	        nums = nums + 1
+# end def
 while(count <= 10000):
-	bet100 = betAmount * 100
-	if (AboveOrBelow == 'Above'):
-		oUn = 100 - OverUnderNum
-	    	isTooMuch = bet100 / oUn * (1 - 0.02)
-	elif (AboveOrBelow == 'Below'):
-    		oUn = OverUnderNum - 1
-   	 	isTooMuch = bet100 / oUn * (1 - 0.02)
-   	if (isTooMuch > 100):
-	  	print("IS TOO MUCH!")
-    		betAmount = startBet
-	
-	betTX = [operations.Transfer(**{
-        "from": accountname,
-        "to": "epicdice",
-        "amount": str(betAmount) + " STEEM",
-        "memo": str(AboveOrBelow) + " " + str(OverUnderNum),
-    })]
+	#bet100 = betAmount * 100
+	#if (AboveOrBelow == 'Above'):
+	#	oUn = 100 - OverUnderNum
+	#    	isTooMuch = bet100 / oUn * (1 - 0.02)
+	#elif (AboveOrBelow == 'Below'):
+    	#	oUn = OverUnderNum - 1
+   	# 	isTooMuch = bet100 / oUn * (1 - 0.02)
+   	#if (isTooMuch > 100):
+	#  	print("IS TOO MUCH!")
+    	#	betAmount = startBet
+	betTX = []
+	betTX.append({
+        'from': accountname,
+        'to': 'epicdice',
+        'amount': (str(betAmount) + ' STEEM'),
+        'memo': (AboveOrBelow + ' ' + str(OverUnderNum)),
+	})
 	tb = TransactionBuilder()
-	tb.appendOps(betTX)
+	ops = None
+	ops = [operations.Transfer(**x) for x in betTX]
+	tb.appendOps(ops)
 	tb.appendSigner(accountname, "active")
 	tb.sign()
 	tb.broadcast()
@@ -83,48 +124,11 @@ while(count <= 10000):
 	steemBalance = Amount(userAcct['balance']).amount
 	print("%s STEEM" % steemBalance)
 	if steemBalance <= stopLose:
-	   	print("%s STEEM left, hit stopLose." % steemBalance)
+		print("%s STEEM left, hit stopLose." % steemBalance)
 		break
 	elif steemBalance >= stopWin:
-    		print("%s STEEM left, hit stopWin." % steemBalance)
-    		break
+		print("%s STEEM left, hit stopWin." % steemBalance)
+		break
+
 	betAmount = betAmount + (betAmount*0.1)
-
-
-	for post in stream:
-		if accountname in str(post):
-			dataStr = str(post).replace("u'","'")
-			dataStr = dataStr.replace("'","")
-			dataStr = dataStr.replace('"',"")
-			dataStr = dataStr.replace('{',"")
-			dataStr = dataStr.replace('}',"")
-			dataArray = dataStr.split(",")
-			for datas in dataArray:
-				if datas.find("from") != -1:
-					fromWho = datas
-					accFrom = fromWho.split(":")
-					if accFrom[1].strip()=="epicdice":
-						fromEpic = True
-					elif accFrom[1].strip()==accountname:
-						fromEpic = False
-				if datas.find("memo") != -1:
-					memoWhat = datas
-					memoDatas = memoWhat.split(":")
-					if memoDatas[1].strip()=="You have Won! Dice Rolled":
-						winLose = True
-					elif memoDatas[1].strip()=="You Lost. Dice Rolled":
-						winLose = False	
-
-				if datas.find("betAmount") != -1:
-					betAmount = datas
-					amountDatas = betAmount.split(":")
-					tempWon = amountDatas[1].strip()
-					muchWon =tempWon.split(" ")
-			nums = nums + 1
-			if fromEpic is True:
-				if winLose is True:
-					print(accountname + " Won! " + str(muchWon[0]) + " STEEM")
-					break
-				elif winLose is False:
-					print(accountname + " Lost! :,( " + str(muchWon[0]) + " STEEM")
-					break
+	print(didWin())
