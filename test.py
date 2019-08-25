@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #EpicBot in development by @bitcoinjake09 7/10/2019
-#EpicBot in Update by @bitcoinjake09 & @bountywolf 8/24/2019
+#EpicBot Update by @bitcoinjake09 & @bountywolf 8/24/2019+
 from steem import Steem
 from beem.steem import Steem
 from beem.nodelist import NodeList
@@ -44,7 +44,6 @@ betAmount = startBet
 
 count = 1 #do not modify - is part of loop + display
 minimumBet = 0.1
-sleepAmt = 4
 houseEdge = (1 - 0.02)
 
 #get balance
@@ -139,13 +138,17 @@ while(count <= 10000):
 	#		betAmount = startBet
 	#elif not (didWin()):
 	#	betAmount = startBet
-	boolDidWin=didWin()
-	if ((count<=3 and not boolDidWin) or (betAmount == maxBet)):
+	print("waiting for Win/Lose...")
+	if didWin():
+		boolDidWin=True
+	else:
+		boolDidWin=False
+	if (count<=3 and (not boolDidWin)):
 		betAmount=startBet
-	elif ((count>=4 and count<=10) and not boolDidWin):
+	elif ((count>=4 and count<=10) and (not boolDidWin)):
 		betAmount=betAmount + startBet
-	elif ((count>=11 and count<=20) and not boolDidWin):
+	elif ((count>=11 and count<=20) and (not boolDidWin)):
 		betAmount=betAmount + (startBet*10)
-	if (isTooBig(betAmount) or boolDidWin):
+	if (isTooBig(betAmount) or boolDidWin or (betAmount == maxBet)):
 		betAmount=startBet
 	count = count + 1
