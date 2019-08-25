@@ -144,12 +144,11 @@ while(count <= 10000):
 	#		betAmount = startBet
 	#elif not (didWin()):
 	#	betAmount = startBet
-	boolDidWin=didWin()
-	if ((count<=3 and boolDidWin) or (betAmount == maxBet)):
+	if ((count<=3 and not boolDidWin) or (betAmount == maxBet)):
 		betAmount=startBet
-	elif ((count>=4 and count<=10) and boolDidWin):
+	elif ((count>=4 and count<=10) and not boolDidWin):
 		betAmount=betAmount + startBet
-	elif ((count>=11 and count<=20) and boolDidWin):
+	elif ((count>=11 and count<=20) and not boolDidWin):
 		betAmount=betAmount + (startBet*10)
 	else:
 		betAmount=startBet
