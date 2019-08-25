@@ -24,9 +24,9 @@ PK = ''
 accountname = 'bitcoinjake09' #replace my name with your STEEM name
 
 startBet = 0.1
-maxBet = 0.5
+maxBet = 5
 AboveOrBelow = 'Above' # can be 'Above' or 'Below'
-OverUnderNum = 6
+OverUnderNum = 91
 
 stopLose = 0 #set the amount(acount balance) you want to stop at when losing.
 stopWin = 150 #set the amount(acount balance) you want to stop at when winning.
@@ -50,20 +50,11 @@ houseEdge = (1 - 0.02)
 
 #get balance
 userAcct = Account(accountname)
-def didWin(args1):
+def didWin():
 	nums = muchWon = 0
 	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = ""
 	winLose = fromEpic = None
-	bet100 = args1 * 100
-	if (AboveOrBelow == 'Above'):
-		oUn = 100 - OverUnderNum
-	    	isTooMuch = bet100 / oUn * (1 - 0.02)
-	elif (AboveOrBelow == 'Below'):
-    		oUn = OverUnderNum - 1
-   	 	isTooMuch = bet100 / oUn * (1 - 0.02)
-   	if (isTooMuch > 100):
-	  	print("IS TOO MUCH!")
-		return False
+
 	for post in stream:
 	    if accountname in str(post):
 		dataStr = str(post).replace("u'","'")
@@ -104,6 +95,20 @@ def didWin(args1):
 	        nums = nums + 1
 
 # end def
+def isTooBig(args2):
+	bet100 = args2 * 100
+	if (AboveOrBelow == 'Above'):
+		oUn = 100 - OverUnderNum
+	    	isTooMuch = bet100 / oUn * (1 - 0.02)
+	elif (AboveOrBelow == 'Below'):
+    		oUn = OverUnderNum - 1
+   	 	isTooMuch = bet100 / oUn * (1 - 0.02)
+   	if (isTooMuch > 100):
+	  	print("IS TOO MUCH!")
+		return False
+	else:
+		return True
+# end def
 while(count <= 10000):
 	betTX = []
 	betTX.append({
@@ -132,10 +137,21 @@ while(count <= 10000):
 		print("%s STEEM left, hit stopWin." % steemBalance)
 		break
 
-	if (didWin(betAmount)):
-		if (betAmount < maxBet):
-			betAmount = betAmount + (betAmount*0.1)
-		elif (betAmount >= maxBet):
-			betAmount = startBet
-	elif not (didWin(betAmount)):
-		betAmount = startBet
+	#if (didWin()):
+	#	if (betAmount < maxBet):
+	#		betAmount = betAmount + (betAmount*0.1)
+	#	elif (betAmount >= maxBet):
+	#		betAmount = startBet
+	#elif not (didWin()):
+	#	betAmount = startBet
+	boolDidWin=didWin()
+	if ((count<=3 and boolDidWin) or (betAmount == maxBet)):
+		betAmount=startBet
+	elif ((count>=4 and count<=10) and boolDidWin):
+		betAmount=betAmount + startBet
+	elif ((count>=11 and count<=20) and boolDidWin):
+		betAmount=betAmount + (startBet*10)
+	else:
+		betAmount=startBet
+	if (isTooBig(betAmount)):
+		betAmount=startBet
