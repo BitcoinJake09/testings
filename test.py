@@ -35,7 +35,6 @@ stopWin = 150 #set the amount(acount balance) you want to stop at when winning.
 #AboveOrBelow = 'Below' # can be 'Above' or 'Below'
 #OverUnderNum = 95
 
-
 s = Steem(node = nodes, keys=[PK])
 blockchain = Blockchain()
 stream = blockchain.stream()
@@ -54,7 +53,6 @@ def didWin():
 	nums = muchWon = 0
 	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = ""
 	winLose = fromEpic = None
-
 	for post in stream:
 	    if accountname in str(post):
 		dataStr = str(post).replace("u'","'")
@@ -93,7 +91,6 @@ def didWin():
 				print(accountname + " Lost! :,( " + str(muchWon[0]) + " STEEM")
 				return False
 	        nums = nums + 1
-
 # end def
 def isTooBig(args2):
 	bet100 = args2 * 100
@@ -105,9 +102,9 @@ def isTooBig(args2):
    	 	isTooMuch = bet100 / oUn * (1 - 0.02)
    	if (isTooMuch > 100):
 	  	print("IS TOO MUCH!")
-		return False
-	else:
 		return True
+	else:
+		return False
 # end def
 while(count <= 10000):
 	betTX = []
@@ -129,14 +126,12 @@ while(count <= 10000):
 	print("Balance: %s STEEM" % steemBalance)
 	print ('bet # ' + str(count))
 	print((str(betAmount) + ' STEEM ') + ((AboveOrBelow + ' ' + str(OverUnderNum))))
-	count = count + 1
 	if steemBalance <= stopLose:
 		print("%s STEEM left, hit stopLose." % steemBalance)
 		break
 	elif steemBalance >= stopWin:
 		print("%s STEEM left, hit stopWin." % steemBalance)
 		break
-
 	#if (didWin()):
 	#	if (betAmount < maxBet):
 	#		betAmount = betAmount + (betAmount*0.1)
@@ -144,13 +139,13 @@ while(count <= 10000):
 	#		betAmount = startBet
 	#elif not (didWin()):
 	#	betAmount = startBet
+	boolDidWin=didWin()
 	if ((count<=3 and not boolDidWin) or (betAmount == maxBet)):
 		betAmount=startBet
 	elif ((count>=4 and count<=10) and not boolDidWin):
 		betAmount=betAmount + startBet
 	elif ((count>=11 and count<=20) and not boolDidWin):
 		betAmount=betAmount + (startBet*10)
-	else:
-		betAmount=startBet
 	if (isTooBig(betAmount)):
 		betAmount=startBet
+	count = count + 1
