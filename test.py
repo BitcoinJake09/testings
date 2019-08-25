@@ -24,6 +24,7 @@ PK = ''
 accountname = 'bitcoinjake09' #replace my name with your STEEM name
 
 startBet = 0.1
+maxBet = 0.5
 AboveOrBelow = 'Above' # can be 'Above' or 'Below'
 OverUnderNum = 6
 
@@ -49,7 +50,7 @@ houseEdge = (1 - 0.02)
 
 #get balance
 userAcct = Account(accountname)
-def didWin():
+def didWin(args1):
 	nums = muchWon = 0
 	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = ""
 	winLose = fromEpic = None
@@ -118,11 +119,12 @@ while(count <= 10000):
 	tb.appendSigner(accountname, "active")
 	tb.sign()
 	tb.broadcast()
-	print ('bet # ' + str(count))
-	count = count + 1
 	userAcct = Account(accountname)
 	steemBalance = Amount(userAcct['balance']).amount
-	print("%s STEEM" % steemBalance)
+	print("Balance: %s STEEM" % steemBalance)
+	print ('bet # ' + str(count))
+	print((str(betAmount) + ' STEEM ') + ((AboveOrBelow + ' ' + str(OverUnderNum))))
+	count = count + 1
 	if steemBalance <= stopLose:
 		print("%s STEEM left, hit stopLose." % steemBalance)
 		break
@@ -130,5 +132,10 @@ while(count <= 10000):
 		print("%s STEEM left, hit stopWin." % steemBalance)
 		break
 
-	betAmount = betAmount + (betAmount*0.1)
-	print(didWin())
+	if (didWin(betAmount)):
+		if (betAmount < maxBet):
+			betAmount = betAmount + (betAmount*0.1)
+		elif (betAmount >= maxBet):
+			betAmount = startBet
+	elif not (didWin(betAmount)):
+		betAmount = startBet
