@@ -54,7 +54,16 @@ def didWin(args1):
 	nums = muchWon = 0
 	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = ""
 	winLose = fromEpic = None
-
+	bet100 = args1 * 100
+	if (AboveOrBelow == 'Above'):
+		oUn = 100 - OverUnderNum
+	    	isTooMuch = bet100 / oUn * (1 - 0.02)
+	elif (AboveOrBelow == 'Below'):
+    		oUn = OverUnderNum - 1
+   	 	isTooMuch = bet100 / oUn * (1 - 0.02)
+   	if (isTooMuch > 100):
+	  	print("IS TOO MUCH!")
+		return False
 	for post in stream:
 	    if accountname in str(post):
 		dataStr = str(post).replace("u'","'")
@@ -93,18 +102,9 @@ def didWin(args1):
 				print(accountname + " Lost! :,( " + str(muchWon[0]) + " STEEM")
 				return False
 	        nums = nums + 1
+
 # end def
 while(count <= 10000):
-	#bet100 = betAmount * 100
-	#if (AboveOrBelow == 'Above'):
-	#	oUn = 100 - OverUnderNum
-	#    	isTooMuch = bet100 / oUn * (1 - 0.02)
-	#elif (AboveOrBelow == 'Below'):
-    	#	oUn = OverUnderNum - 1
-   	# 	isTooMuch = bet100 / oUn * (1 - 0.02)
-   	#if (isTooMuch > 100):
-	#  	print("IS TOO MUCH!")
-    	#	betAmount = startBet
 	betTX = []
 	betTX.append({
         'from': accountname,
