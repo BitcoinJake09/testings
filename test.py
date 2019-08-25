@@ -146,6 +146,6 @@ while(count <= 10000):
 		betAmount=betAmount + startBet
 	elif ((count>=11 and count<=20) and not boolDidWin):
 		betAmount=betAmount + (startBet*10)
-	if (isTooBig(betAmount)):
+	if (isTooBig(betAmount) or boolDidWin):
 		betAmount=startBet
 	count = count + 1
