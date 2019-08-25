@@ -28,8 +28,8 @@ maxBet = 5
 AboveOrBelow = 'Above' # can be 'Above' or 'Below'
 OverUnderNum = 91
 
-stopLose = 0 #set the amount(acount balance) you want to stop at when losing.
-stopWin = 150 #set the amount(acount balance) you want to stop at when winning.
+stopLose = 150 #set the amount(acount balance) you want to stop at when losing.
+stopWin = 250 #set the amount(acount balance) you want to stop at when winning.
 
 #betAmount = 1
 #AboveOrBelow = 'Below' # can be 'Above' or 'Below'
@@ -42,7 +42,7 @@ stream = blockchain.stream()
 nums = muchWon = 0
 betAmount = startBet
 
-count = 1 #do not modify - is part of loop + display
+count = roundBets = 1 #do not modify - is part of loop + display
 minimumBet = 0.1
 houseEdge = (1 - 0.02)
 
@@ -143,12 +143,16 @@ while(count <= 10000):
 		boolDidWin=True
 	else:
 		boolDidWin=False
-	if (count<=3 and (not boolDidWin)):
+	if (roundBets<=3 and (not boolDidWin)):
 		betAmount=startBet
-	elif ((count>=4 and count<=10) and (not boolDidWin)):
+	elif ((roundBets>=4 and roundBets<=12) and (not boolDidWin)):
 		betAmount=betAmount + startBet
-	elif ((count>=11 and count<=20) and (not boolDidWin)):
+	elif ((roundBets>=13 and roundBets<=23) and (not boolDidWin)):
+		betAmount=betAmount + (startBet*5)
+	elif ((roundBets>=24 and roundBets<=29) and (not boolDidWin)):
 		betAmount=betAmount + (startBet*10)
 	if (isTooBig(betAmount) or boolDidWin or (betAmount == maxBet)):
 		betAmount=startBet
+		roundBets = 0
 	count = count + 1
+	roundBets = roundBets + 1
