@@ -49,8 +49,8 @@ houseEdge = (1 - 0.02)
 #get balance
 userAcct = Account(accountname)
 def didWin():
-	nums = muchWon = 0
-	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = ""
+	nums = muchWon = tempWon = muchBet = 0
+	whichAmt = fromWho = memoWhat = betAmount = accFrom = memoDatas = amountDatas = amountTX = tempSplit = ""
 	winLose = fromEpic = None
 	for post in stream:
 	    if accountname in str(post):
@@ -75,19 +75,25 @@ def didWin():
 					winLose = True
 				elif memoDatas[1].strip()=="You Lost. Dice Rolled":
 					winLose = False
-
+			#print(datas)
 			if datas.find("betAmount") != -1:
 				betAmount = datas
 				amountDatas = betAmount.split(":")
-				tempWon = amountDatas[1].strip()
+				tempAmt = amountDatas[1].strip()
+				muchBet =tempAmt.split(" ")
+			if datas.find("amount") != -1:
+				amountTX = datas
+				amountDatas = amountTX.split(":")
+				tempSplit = amountDatas[1].split(" ")
+				tempWon = tempSplit[1].strip()
 				muchWon =tempWon.split(" ")
-				
 		if fromEpic is True:
 			if winLose is True:
+				
 				print(accountname + " Won! " + str(muchWon[0]) + " STEEM")
 				return True
 			elif winLose is False:
-				print(accountname + " Lost! :,( " + str(muchWon[0]) + " STEEM")
+				print(accountname + " Lost! :,( " + str(muchBet[0]) + " STEEM")
 				return False
 	        nums = nums + 1
 # end def
@@ -95,10 +101,10 @@ def isTooBig(args2):
 	bet100 = args2 * 100
 	if (AboveOrBelow == 'Above'):
 		oUn = 100 - OverUnderNum
-	    	isTooMuch = bet100 / oUn * (1 - 0.02)
+	    	isTooMuch = bet100 / oUn * (houseEdge)
 	elif (AboveOrBelow == 'Below'):
     		oUn = OverUnderNum - 1
-   	 	isTooMuch = bet100 / oUn * (1 - 0.02)
+   	 	isTooMuch = bet100 / oUn * (houseEdge)
    	if (isTooMuch > 100):
 	  	print("IS TOO MUCH!")
 		return True
@@ -122,6 +128,7 @@ while(count <= 10000):
 	tb.broadcast()
 	userAcct = Account(accountname)
 	steemBalance = Amount(userAcct['balance']).amount
+	print(" ")
 	print("Balance: %s STEEM" % steemBalance)
 	print ('bet # ' + str(count))
 	print((str(betAmount) + ' STEEM ') + ((AboveOrBelow + ' ' + str(OverUnderNum))))
@@ -151,8 +158,8 @@ while(count <= 10000):
 		betAmount=betAmount + (startBet*5)
 	elif ((roundBets>=24 and roundBets<=29) and (not boolDidWin)):
 		betAmount=betAmount + (startBet*10)
-	if (isTooBig(betAmount) or boolDidWin or (betAmount == maxBet)):
+	if (isTooBig(betAmount) or (boolDidWin) or (betAmount == maxBet)):
 		betAmount=startBet
-		roundBets = 0
+		roundBets = 1
 	count = count + 1
 	roundBets = roundBets + 1
